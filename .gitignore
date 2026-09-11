@@ -1,0 +1,31 @@
+# Entornos virtuales de Python
+.venv/
+.fvenv/
+venv/
+env/
+
+# Caché y archivos compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Pruebas y cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
