@@ -5,9 +5,17 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins-agent
   containers:
     - name: python
       image: python:3.12-slim
+      command:
+        - sleep
+      args:
+        - 99d
+
+    - name: gcloud
+      image: gcr.io/google.com/cloudsdktool/google-cloud-cli:stable
       command:
         - sleep
       args:
@@ -68,6 +76,32 @@ spec:
                     sh '''
                         . .venv/bin/activate
                         pytest --cov=app_backend --cov-report=term-missing
+                    '''
+                }
+            }
+        }
+
+	stage('Construir y publicar imagen') {
+            steps {
+                script {
+                    env.IMAGE_TAG = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                }
+
+                container('gcloud') {
+                    sh '''
+                        echo "Verificando identidad de Google Cloud"
+                        gcloud auth print-access-token > /dev/null
+
+                        echo "Construyendo imagen con tag: ${IMAGE_TAG}"
+
+                        gcloud builds submit . \
+                          --config=cloudbuild.yaml \
+                          --substitutions="_IMAGE_TAG=${IMAGE_TAG}" \
+                          --project=project-965520fc-7451-4c3b-a07 \
+                          --quiet
                     '''
                 }
             }
