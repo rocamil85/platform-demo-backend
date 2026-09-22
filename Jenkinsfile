@@ -67,7 +67,7 @@ spec:
                 container('python') {
                     sh '''
                         . .venv/bin/activate
-                        pytest
+                        pytest --cov=app_backend --cov-report=term-missing
                     '''
                 }
             }
